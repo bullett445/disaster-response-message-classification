@@ -12,6 +12,7 @@ from flask import render_template, request, jsonify
 from plotly.graph_objs import Bar
 from sqlalchemy import create_engine
 import pickle
+import plotly.express as px
 
 app = Flask(__name__)
 
@@ -30,11 +31,13 @@ def tokenize(text):
 
 
 # load data
-nltk.download(['punkt', 'wordnet', 'omw-1.4'])
+#nltk.download(['punkt', 'wordnet', 'omw-1.4'])
 engine = create_engine('sqlite:///../../etl/data/messages.db')
 
 df = pd.read_sql_table('messages', engine)
-
+categories = df.drop(columns=['id', 'message', 'original', 'genre'])
+category_groups = categories.melt(var_name='category').groupby(['category', 'value'], as_index=False).agg(count=('value', 'count'))
+category_groups['label_value'] = category_groups['value'].astype("string")
 # load model
 model = pickle.load(open("../../etl/data/model.pickle", 'rb'))
 
@@ -51,6 +54,14 @@ def index():
     
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
+    df2 = pd.DataFrame({
+        'Fruit': ['Apples', 'Oranges', 'Bananas', 'Apples', 'Oranges',
+                  'Bananas'],
+        'Amount': [4, 1, 2, 2, 4, 5],
+        'City': ['SF', 'SF', 'SF', 'Montreal', 'Montreal', 'Montreal']
+    })
+    fig = px.bar(category_groups, x='category', y='count', color='label_value',
+                 barmode='group')
     graphs = [
         {
             'data': [
@@ -69,6 +80,10 @@ def index():
                     'title': "Genre"
                 }
             }
+        },
+        {
+            'data': fig,
+            'layout': {}
         }
     ]
     
