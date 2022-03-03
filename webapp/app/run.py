@@ -2,20 +2,23 @@ import json
 import plotly
 import pandas as pd
 
+import nltk
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
 
 from flask import Flask
 from flask import render_template, request, jsonify
 from plotly.graph_objs import Bar
-from sklearn.externals import joblib
 from sqlalchemy import create_engine
-
+import pickle
 
 app = Flask(__name__)
 
+
 def tokenize(text):
     tokens = word_tokenize(text)
+    tokens = [word for word in tokens if word.isalnum() and word not in stopwords.words('english')]
     lemmatizer = WordNetLemmatizer()
 
     clean_tokens = []
@@ -25,12 +28,15 @@ def tokenize(text):
 
     return clean_tokens
 
+
 # load data
-engine = create_engine('sqlite:///../data/YourDatabaseName.db')
-df = pd.read_sql_table('YourTableName', engine)
+nltk.download(['punkt', 'wordnet', 'omw-1.4'])
+engine = create_engine('sqlite:///../../etl/data/messages.db')
+
+df = pd.read_sql_table('messages', engine)
 
 # load model
-model = joblib.load("../models/your_model_name.pkl")
+model = pickle.load(open("../../etl/data/model.pickle", 'rb'))
 
 
 # index webpage displays cool visuals and receives user input text for model
