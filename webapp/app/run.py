@@ -31,37 +31,29 @@ def tokenize(text):
 
 
 # load data
-#nltk.download(['punkt', 'wordnet', 'omw-1.4'])
-engine = create_engine('sqlite:///../../etl/data/messages.db')
+nltk.download(['punkt', 'wordnet', 'omw-1.4'])
+engine = create_engine('sqlite:///../data/DisasterResponse.db')
 
 df = pd.read_sql_table('messages', engine)
+
+# extract data needed for visuals
 categories = df.drop(columns=['id', 'message', 'original', 'genre'])
 category_groups = categories.melt(var_name='category').groupby(['category', 'value'], as_index=False).agg(count=('value', 'count'))
 category_groups['label_value'] = category_groups['value'].astype("string")
+
+genre_counts = df.groupby('genre').count()['message']
+genre_names = list(genre_counts.index)
+
 # load model
-model = pickle.load(open("../../etl/data/model.pickle", 'rb'))
+model = pickle.load(open("../models/classifier.pkl", 'rb'))
 
 
 # index webpage displays cool visuals and receives user input text for model
 @app.route('/')
 @app.route('/index')
 def index():
-    
-    # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
-    genre_counts = df.groupby('genre').count()['message']
-    genre_names = list(genre_counts.index)
-    
     # create visuals
-    # TODO: Below is an example - modify to create your own visuals
-    df2 = pd.DataFrame({
-        'Fruit': ['Apples', 'Oranges', 'Bananas', 'Apples', 'Oranges',
-                  'Bananas'],
-        'Amount': [4, 1, 2, 2, 4, 5],
-        'City': ['SF', 'SF', 'SF', 'Montreal', 'Montreal', 'Montreal']
-    })
-    fig = px.bar(category_groups, x='category', y='count', color='label_value',
-                 barmode='group')
+    fig = px.bar(category_groups, x='category', y='count', color='label_value', barmode='group')
     graphs = [
         {
             'data': [
