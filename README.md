@@ -1,5 +1,12 @@
 # Disaster Response Pipeline Project
 
+### Project description
+
+In this project a classifier is trained on the relevance of short messages which have been sent during a desaster.
+The classes are given in multiple categories. The automated classification of messages shall help disaster response
+teams to cope better with the high number of messages produced in situations like this. It can help avoid missing
+messages which are important and require immediate attention.
+
 ### Required libraries
 * nltk
 * flask
@@ -25,3 +32,27 @@ If you also want to run the notebooks, you also need
     `python run.py`
 
 3. Go to http://0.0.0.0:3001/
+
+### File descriptions
+
+    README.md: this file
+    etl\ exploratory code for preparing data and model
+        ETL Pipeline Preparation.ipynb: jupyter notebook exploring the pipeline
+        ML Pipeline Preparation.ipynb: jupyter notebook exploring the model
+    webapp\ plain python implementation
+        app\
+            run.py: main routine running the flask app
+            templates\
+                master.html: home page template 
+                go.html: query result template
+        data\
+            disaster_categories.csv: categories dataset
+            disaster_messages.csv: messages dataset
+            DisasterResponse.db: disaster response database
+            process_data.py: ETL process
+        models\
+            train_classifier.py: build and optimize the model
+
+### Acknowledgements
+This project was completed as part of the [Udacity Data Scientist Nanodegree](https://www.udacity.com/). Based
+on a dataset provided by [Figure Eight](https://en.wikipedia.org/wiki/Figure_Eight_Inc.) 

@@ -1,2 +1,5 @@
 etl/data/*
 etl/.ipynb_checkpoints
+/webapp/models/classifier.pkl
+/etl/model.pickle
+/webapp/data/DisasterResponse.db
